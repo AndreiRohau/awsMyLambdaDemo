@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Trigger lambda demo
+
+Resources:
+  AwsLambda: # Details about the myDateTimeFunction Lambda function
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: 'sam-stack-any-lambda-demo'
+      Handler: me.ras.api.LambdaSqsToSns::handleRequest
+      Runtime: java8
+      MemorySize: 512
+      AutoPublishAlias: live
+      Timeout: 60
+      Environment:
+        Variables:
+          PARAM1: "TEST-DEMO"
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref ImageBucket
+            Events: s3:ObjectCreated:*
+
+  ImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 'sam-stack-any-bucket-name-demo'
+
+Outputs:
+  AwsLambda:
+    Description: "Lambda Function ARN"
+    Value: !Ref AwsLambda
+    Export:
+     Name: "sam-stack-any-lambda-demo"
+
+#      # Grants this function permission to call lambda:InvokeFunction
+#      Policies:
+#        - Version: "2012-10-17"
+#          Statement:
+#            - Effect: "Allow"
+#              Action:
+#                - "lambda:InvokeFunction"
+#              Resource: '*'
+#      DeploymentPreference:
+#        # Specifies the deployment configuration
+#        Type: Linear10PercentEvery1Minute
