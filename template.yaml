@@ -28,6 +28,23 @@ Resources:
     Properties:
       BucketName: 'sam-stack-any-bucket-name-demo'
 
+  MyS3ImageBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ImageBucket
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - s3:*
+            Effect: Allow
+            Resource:
+              - !Sub arn:aws:s3:::${ImageBucket}
+              - !Sub arn:aws:s3:::${ImageBucket}/*
+            Principal:
+              AWS:
+                - '*'
+                
 Outputs:
   AwsLambda:
     Description: "Lambda Function ARN"
